@@ -16,3 +16,9 @@ Or run directly:
 ```
 curl -s https://raw.githubusercontent.com/schmich/github-archive/master/github-archive.sh | sh -s <username>
 ```
+
+## License
+
+Copyright &copy; 2015 Chris Schmich
+<br />
+MIT License. See [LICENSE](LICENSE) for details.
