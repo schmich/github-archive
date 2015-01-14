@@ -38,13 +38,7 @@ total=`echo "$repos" | wc -l | awk '{ print $1 }'`
 echo "\nRepos to be cloned ($total):"
 echo "$repos\n"
 
-read -p "Create archive (y/n)? " response
-if [[ ! $response =~ ^[Yy]$ ]]; then
-  echo "Exiting."
-  exit 1
-fi
-
-echo "\nCloning repos into $archive_dir."
+echo "Cloning repos into $archive_dir.\n"
 mkdir "$archive_dir"
 cd "$archive_dir"
 
