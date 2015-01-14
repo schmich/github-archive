@@ -1,6 +1,6 @@
 # github-archive
 
-Create a self-contained .tar.gz archive of all of your repos.
+Create a self-contained .tar.gz archive of all of your GitHub repos.
 
 ## Usage
 
