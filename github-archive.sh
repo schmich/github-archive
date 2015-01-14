@@ -1,3 +1,5 @@
+#/bin/sh
+
 user="$1"
 
 if [ -z "$user" ]; then
