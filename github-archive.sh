@@ -1,10 +1,13 @@
 #/bin/sh
 
 user="$1"
+password="$2"
 
 if [ -z "$user" ]; then
-  echo "Specify username: $0 <username>"
-  exit 1
+  printf "GitHub username: "
+  read user
+else
+  echo "Using GitHub username $user."
 fi
 
 archive_name="github-archive-$user-`date +%Y-%m-%d`"
@@ -16,14 +19,33 @@ if [ -d "$archive_dir" ]; then
   exit 1
 fi
 
-echo "Gathering repo list."
+if [ -z "$password" ]; then
+  printf "GitHub password (enter nothing for public repos only): "
+  stty -echo
+  read password
+  echo
+  stty echo
+else
+  echo "Using GitHub password from arguments."
+fi
 
-url="https://api.github.com/users/$user/repos?type=owner"
+if [ -z "$password" ]; then
+  echo "\nGathering public repo list only."
+  url="https://api.github.com/users/$user/repos?type=owner"
+  curl_opts=""
+else
+  echo "\nGathering public and private repo list."
+  url="https://api.github.com/user/repos?type=owner"
+  curl_opts="-u ${user}:${password}"
+fi
+
+# TODO: Handle HTTP 401 Unauthorized responses.
+
 while [ -n "$url" ]; do
   echo "Reading from $url."
-  response=`curl --silent -i "$url"`
+  response=`curl -s -i ${curl_opts} "$url"`
   url=`echo "$response" | grep -e "^Link:.*rel=\"next\"" | sed 's/^.*\(https:\/\/.*\)>.*rel=\"next\".*$/\1/'`
-  page_repos=`echo "$response" | grep -e "\"git_url\":" | awk -F\" '{ print $4 }'`
+  page_repos=`echo "$response" | grep -e "\"ssh_url\":" | awk -F\" '{ print $4 }'`
   repos="$repos\n$page_repos"
 done
 
@@ -41,6 +63,8 @@ echo "$repos\n"
 echo "Cloning repos into $archive_dir.\n"
 mkdir "$archive_dir"
 cd "$archive_dir"
+
+# TODO: Handle clone failures.
 
 count=1
 for repo in `echo "$repos"`; do
