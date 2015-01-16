@@ -14,7 +14,7 @@ github-archive/github-archive.sh <username>
 Or run directly:
 
 ```
-curl -s https://raw.githubusercontent.com/schmich/github-archive/master/github-archive.sh | sh -s <username>
+sh <(curl -s https://raw.githubusercontent.com/schmich/github-archive/master/github-archive.sh) <username>
 ```
 
 ## License
