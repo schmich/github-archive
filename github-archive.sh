@@ -32,18 +32,20 @@ fi
 if [ -z "$password" ]; then
   echo "\nGathering public repo list only."
   url="https://api.github.com/users/$user/repos?type=owner"
-  curl_opts=""
 else
   echo "\nGathering public and private repo list."
   url="https://api.github.com/user/repos?type=owner"
-  curl_opts="-u ${user}:${password}"
 fi
 
 # TODO: Handle HTTP 401 Unauthorized responses.
 
 while [ -n "$url" ]; do
   echo "Reading from $url."
-  response=`curl -s -i ${curl_opts} "$url"`
+  if [ -z "$password" ]; then
+    response=`curl -s -i "$url"`
+  else
+    response=`echo -u "${user}:${password}" | curl -s -i -K - "$url"`
+  fi
   url=`echo "$response" | grep -e "^Link:.*rel=\"next\"" | sed 's/^.*\(https:\/\/.*\)>.*rel=\"next\".*$/\1/'`
   page_repos=`echo "$response" | grep -e "\"ssh_url\":" | awk -F\" '{ print $4 }'`
   repos="$repos\n$page_repos"
